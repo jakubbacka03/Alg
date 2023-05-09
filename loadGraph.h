@@ -10,14 +10,14 @@ using namespace std;
 
 class loadGraph
 {
-	private:
-		void AddEdge(int from, int to, vector<vector<int>>& adjacencyMatrix);
-		int DFS(int startVertex, vector<bool>& visited, vector<vector<int>>& adjacencyMatrix);
-		int BFS(int startVertex, vector<bool>& visited, vector<vector<int>>& adjacencyMatrix);
-		int findLargestComponent(vector<vector<int>>& adjacencyMatrix);
-		int FindEccentricities(const vector<vector<int>>& graph, int& radius, int& diameter);		
+private:
+	void AddEdge(int from, int to, vector<vector<int>>& adjacencyMatrix);
+	int DFS(int startVertex, vector<bool>& visited, vector<vector<int>>& adjacencyMatrix);
+	int BFS(int startVertex, vector<bool>& visited, vector<vector<int>>& adjacencyMatrix);
+	int findLargestComponent(vector<vector<int>>& adjacencyMatrix);
+	void FindEccentricities(vector<vector<int>>& adjacencyMatrix);
 
-	public:
-		loadGraph(string path);		
+public:
+	loadGraph(string path);
 };
 
