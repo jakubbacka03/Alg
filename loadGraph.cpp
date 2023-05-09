@@ -1,12 +1,13 @@
 #include "loadGraph.h"
+#include "loadGraph.h"
 #include <stack>
 
 void loadGraph::AddEdge(int from, int to, vector<vector<int>>& adjacencyMatrix)
 {
-	if (from == to)
-		return;
-	adjacencyMatrix[from][to] = 1;
-	adjacencyMatrix[to][from] = 1;
+    if (from == to)
+        return;
+    adjacencyMatrix[from][to] = 1;
+    adjacencyMatrix[to][from] = 1;
 }
 
 loadGraph::loadGraph(string path)
@@ -39,7 +40,9 @@ loadGraph::loadGraph(string path)
     int largestComponentSize = findLargestComponent(adjacencyMatrix);
     cout << "Largest component: " << largestComponentSize << endl;
 
-    
+    //eccentricities
+    FindEccentricities(adjacencyMatrix);
+
 
 }
 
@@ -105,47 +108,29 @@ int loadGraph::findLargestComponent(vector<vector<int>>& adjacencyMatrix) {
     return largestComponentSize;
 }
 
-int loadGraph::FindEccentricities(const vector<vector<int>>& graph, int& radius, int& diameter) {
-    int n = graph.size();
-    const int INF = std::numeric_limits<int>::max();
+void loadGraph::FindEccentricities(vector<vector<int>>& adjacencyMatrix) {
+    int maxVertex = adjacencyMatrix.size() - 1;
+    vector<bool> visited(maxVertex + 1, false);
+    int largestComponentSize = 0;
+    int radius = INT_MAX;
+    int diameter = 0;
 
-    radius = INF;
-    diameter = 0;
+    for (int i = 1; i <= maxVertex; ++i) {
+        if (!visited[i]) {
+            int componentSize = DFS(i, visited, adjacencyMatrix);
+            largestComponentSize = max(largestComponentSize, componentSize);
+            int eccentricity = 0;
 
-    // Use Floyd-Warshall algorithm to calculate all-pairs shortest paths
-    vector<vector<int>> dist(n, vector<int>(n, INF));
-    for (int i = 0; i < n; ++i) {
-        dist[i][i] = 0;
-        for (int j = 0; j < n; ++j) {
-            if (graph[i][j]) {
-                dist[i][j] = 1;
+            for (int j = 1; j <= maxVertex; ++j) {
+                if (visited[j]) {
+                    vector<bool> tempVisited(maxVertex + 1, false);
+                    eccentricity = max(eccentricity, BFS(j, tempVisited, adjacencyMatrix));
+                }
             }
+            radius = min(radius, eccentricity);
+            diameter = max(diameter, eccentricity);
         }
     }
-    for (int k = 0; k < n; ++k) {
-        for (int i = 0; i < n; ++i) {
-            for (int j = 0; j < n; ++j) {
-                dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j]);
-            }
-        }
-    }
-
-    // Calculate eccentricities of all vertices and find radius and diameter
-    for (int i = 0; i < n; ++i) {
-        int ecc = 0;
-        for (int j = 0; j < n; ++j) {
-            if (dist[i][j] < INF) {
-                ecc = max(ecc, dist[i][j]);
-            }
-        }
-        radius = min(radius, ecc);
-        diameter = max(diameter, ecc);
-    }
-
-    if (radius == INF) {
-        return 0;
-    }
-    else {
-        return 1;
-    }
+    cout << "Radius of largest component: " << radius << endl;
+    cout << "Diameter of largest component: " << diameter << endl;
 }
