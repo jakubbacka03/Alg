@@ -1,5 +1,4 @@
 #include "loadGraph.h"
-#include "loadGraph.h"
 #include <stack>
 #include <list>
 
@@ -75,28 +74,30 @@ int loadGraph::DFS(int startVertex, vector<bool>& visited, vector<list<int>>& ad
 int loadGraph::BFS(int startVertex, vector<bool>& visited, vector<list<int>>& adjacencyList)
 {
     queue<int> q;
-    visited[startVertex] = true;
+    vector<int> distance(adjacencyList.size(), 0);
+
     q.push(startVertex);
+    visited[startVertex] = true;
+
     int eccentricity = 0;
 
-    while (!q.empty()) {
-        int size = q.size();
-        for (int i = 0; i < size; i++)
+    while (!q.empty())
+    {
+        int current = q.front();
+        q.pop();
+
+        for (int neighbor : adjacencyList[current])
         {
-            int vertex = q.front();
-            q.pop();
-
-
-            for (int j : adjacencyList[vertex])
+            if (!visited[neighbor])
             {
-                if (!visited[j])
-                {
-                    visited[j] = true;
-                    q.push(j);
-                }
+                visited[neighbor] = true;
+                distance[neighbor] = distance[current] + 1;
+
+                eccentricity = max(eccentricity, distance[neighbor]);
+
+                q.push(neighbor);
             }
         }
-        eccentricity++;
     }
     return eccentricity;
 }
@@ -123,29 +124,22 @@ void loadGraph::FindEccentricities(vector<list<int>>& adjacencyList)
 {
     int maxVertex = adjacencyList.size() - 1;
     vector<bool> visited(maxVertex + 1, false);
-    int largestComponentSize = 0;
+
     int radius = INT_MAX;
     int diameter = 0;
 
     for (int i = 1; i <= maxVertex; ++i)
     {
-        if (!visited[i]) {
-            int componentSize = DFS(i, visited, adjacencyList);
-            largestComponentSize = max(largestComponentSize, componentSize);
-            int eccentricity = 0;
+        if (!visited[i])
+        {
+            int eccentricity = BFS(i, visited, adjacencyList);
 
-            for (int j = 1; j <= maxVertex; ++j)
-            {
-                if (visited[j])
-                {
-                    vector<bool> tempVisited(maxVertex + 1, false);
-                    eccentricity = max(eccentricity, BFS(j, tempVisited, adjacencyList));
-                }
-            }
+            // update radius and diameter
             radius = min(radius, eccentricity);
             diameter = max(diameter, eccentricity);
         }
     }
-    cout << "Radius of largest component: " << radius << endl;
-    cout << "Diameter of largest component: " << diameter << endl;
+
+    cout << "Radius: " << radius << endl;
+    cout << "Diameter: " << diameter << endl;
 }
