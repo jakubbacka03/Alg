@@ -36,11 +36,11 @@ loadGraph::loadGraph(string path)
     }
     inputfile.close();
 
-    //largest component
+    // largest component
     int largestComponentSize = findLargestComponent(adjacencyList);
     cout << "Largest component: " << largestComponentSize << endl;
 
-    //eccentricities
+    // eccentricities
     FindEccentricities(adjacencyList);
 }
 
@@ -81,6 +81,8 @@ int loadGraph::BFS(int startVertex, vector<bool>& visited, vector<list<int>>& ad
 
     int eccentricity = 0;
 
+    visited = vector<bool>(adjacencyList.size(), false);
+
     while (!q.empty())
     {
         int current = q.front();
@@ -114,13 +116,13 @@ int loadGraph::findLargestComponent(vector<list<int>>& adjacencyList)
         {
             int componentSize = DFS(i, visited, adjacencyList);
             largestComponentSize = max(largestComponentSize, componentSize);
+            
         }
     }
     return largestComponentSize;
 }
 
-
-void loadGraph::FindEccentricities(vector<list<int>>& adjacencyList)
+void loadGraph::FindEccentricities(vector<list<int>>& adjacencyList) 
 {
     int maxVertex = adjacencyList.size() - 1;
     vector<bool> visited(maxVertex + 1, false);
@@ -130,14 +132,13 @@ void loadGraph::FindEccentricities(vector<list<int>>& adjacencyList)
 
     for (int i = 1; i <= maxVertex; ++i)
     {
-        if (!visited[i])
-        {
-            int eccentricity = BFS(i, visited, adjacencyList);
+        
+        int eccentricity = BFS(i, visited, adjacencyList);
 
-            // update radius and diameter
-            radius = min(radius, eccentricity);
-            diameter = max(diameter, eccentricity);
-        }
+        // update radius and diameter
+        radius = min(radius, eccentricity);
+        diameter = max(diameter, eccentricity);
+        
     }
 
     cout << "Radius: " << radius << endl;
